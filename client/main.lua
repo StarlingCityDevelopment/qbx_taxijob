@@ -93,7 +93,9 @@ local function getDeliveryLocation()
     if NpcData.DeliveryBlip then
         RemoveBlip(NpcData.DeliveryBlip)
     end
-    NpcData.DeliveryBlip = AddBlipForCoord(sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].x, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].y, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].z)
+    NpcData.DeliveryBlip = AddBlipForCoord(sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].x,
+        sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].y,
+        sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].z)
     SetBlipColour(NpcData.DeliveryBlip, 3)
     SetBlipRoute(NpcData.DeliveryBlip, true)
     SetBlipRouteColour(NpcData.DeliveryBlip, 3)
@@ -104,15 +106,23 @@ local function getDeliveryLocation()
                 local pos = GetEntityCoords(cache.ped)
                 local dist = #(pos - vec3(sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].x, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].y, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].z))
                 if dist < 20 then
-                    DrawMarker(2, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].x, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].y, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 255, 255, 255, 255, false, false, 0, true, nil, nil, false)
+                    DrawMarker(2, sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].x,
+                        sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].y,
+                        sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].z, 0.0, 0.0, 0.0, 0.0, 0.0,
+                        0.0, 0.3, 0.3, 0.3, 255, 255, 255, 255, false, false, 0, true, nil, nil, false)
                     if dist < 5 then
-                        qbx.drawText3d({text = locale('info.drop_off_npc'), coords = sharedConfig.npcLocations.deliverLocations[NpcData.CurrentDeliver].xyz})
+                        qbx.drawText3d({
+                            text = locale('info.drop_off_npc'),
+                            coords = sharedConfig.npcLocations
+                                .deliverLocations[NpcData.CurrentDeliver].xyz
+                        })
                         if IsControlJustPressed(0, 38) then
                             TaskLeaveVehicle(NpcData.Npc, cache.vehicle, 0)
                             SetEntityAsMissionEntity(NpcData.Npc, false, true)
                             SetEntityAsNoLongerNeeded(NpcData.Npc)
                             local targetCoords = sharedConfig.npcLocations.takeLocations[NpcData.LastNpc]
-                            TaskGoStraightToCoord(NpcData.Npc, targetCoords.x, targetCoords.y, targetCoords.z, 1.0, -1, 0.0, 0.0)
+                            TaskGoStraightToCoord(NpcData.Npc, targetCoords.x, targetCoords.y, targetCoords.z, 1.0, -1,
+                                0.0, 0.0)
                             SendNUIMessage({
                                 action = 'toggleMeter'
                             })
@@ -154,7 +164,7 @@ local function callNpcPoly()
                     local veh = cache.vehicle
                     local maxSeats, freeSeat = GetVehicleMaxNumberOfPassengers(veh), 0
 
-                    for i= maxSeats - 1, 0, -1 do
+                    for i = maxSeats - 1, 0, -1 do
                         if IsVehicleSeatFree(veh, i) then
                             freeSeat = i
                             break
@@ -195,7 +205,7 @@ end
 local function onEnterCallZone()
     if whitelistedVehicle() and not isInsidePickupZone and not NpcData.NpcTaken then
         isInsidePickupZone = true
-        lib.showTextUI(locale('info.call_npc'), {position = 'left-center'})
+        lib.showTextUI(locale('info.call_npc'), { position = 'left-center' })
         callNpcPoly()
     end
 end
@@ -208,7 +218,9 @@ end
 local function createNpcPickUpLocation()
     zone = lib.zones.box({
         coords = config.pzLocations.takeLocations[NpcData.CurrentNpc].coord,
-        size = vec3(config.pzLocations.takeLocations[NpcData.CurrentNpc].height, config.pzLocations.takeLocations[NpcData.CurrentNpc].width, (config.pzLocations.takeLocations[NpcData.CurrentNpc].maxZ - config.pzLocations.takeLocations[NpcData.CurrentNpc].minZ)),
+        size = vec3(config.pzLocations.takeLocations[NpcData.CurrentNpc].height,
+            config.pzLocations.takeLocations[NpcData.CurrentNpc].width,
+            (config.pzLocations.takeLocations[NpcData.CurrentNpc].maxZ - config.pzLocations.takeLocations[NpcData.CurrentNpc].minZ)),
         rotation = config.pzLocations.takeLocations[NpcData.CurrentNpc].heading,
         debug = config.debugPoly,
         onEnter = onEnterCallZone,
@@ -219,33 +231,33 @@ end
 
 
 local function enumerateEntitiesWithinDistance(entities, isPlayerEntities, coords, maxDistance)
-	local nearbyEntities = {}
-	if coords then
-		coords = vec3(coords.x, coords.y, coords.z)
-	else
-		coords = GetEntityCoords(cache.ped)
-	end
-	for k, entity in pairs(entities) do
-		local distance = #(coords - GetEntityCoords(entity))
-		if distance <= maxDistance then
-			nearbyEntities[#nearbyEntities + 1] = isPlayerEntities and k or entity
-		end
-	end
-	return nearbyEntities
+    local nearbyEntities = {}
+    if coords then
+        coords = vec3(coords.x, coords.y, coords.z)
+    else
+        coords = GetEntityCoords(cache.ped)
+    end
+    for k, entity in pairs(entities) do
+        local distance = #(coords - GetEntityCoords(entity))
+        if distance <= maxDistance then
+            nearbyEntities[#nearbyEntities + 1] = isPlayerEntities and k or entity
+        end
+    end
+    return nearbyEntities
 end
 
 local function getVehiclesInArea(coords, maxDistance) -- Vehicle inspection in designated area
-	return enumerateEntitiesWithinDistance(GetGamePool('CVehicle'), false, coords, maxDistance)
+    return enumerateEntitiesWithinDistance(GetGamePool('CVehicle'), false, coords, maxDistance)
 end
 
 local function isSpawnPointClear(coords, maxDistance) -- Check the spawn point to see if it's empty or not:
-	return #getVehiclesInArea(coords, maxDistance) == 0
+    return #getVehiclesInArea(coords, maxDistance) == 0
 end
 
 local function getVehicleSpawnPoint()
     local near = nil
-	local distance = 10000
-	for k, v in pairs(config.cabSpawns) do
+    local distance = 10000
+    for k, v in pairs(config.cabSpawns) do
         if isSpawnPointClear(vec3(v.x, v.y, v.z), 2.5) then
             local pos = GetEntityCoords(cache.ped)
             local cur_distance = #(pos - vec3(v.x, v.y, v.z))
@@ -255,7 +267,7 @@ local function getVehicleSpawnPoint()
             end
         end
     end
-	return near
+    return near
 end
 
 local function calculateFareAmount()
@@ -270,10 +282,12 @@ local function calculateFareAmount()
 
             local fareAmount = 0
 
-            if(config.meter.useGpsPrice) then
-                local distanceBetweenPickupAndDropoff = CalculateTravelDistanceBetweenPoints(pickupLocation.x, pickupLocation.y, pickupLocation.z, dropOffLocation.x, dropOffLocation.y, dropOffLocation.z) / 1609 -- Convert to miles
-                fareAmount =  (distanceBetweenPickupAndDropoff * config.meter.defaultPrice) + config.meter.startingPrice
-            else 
+            if (config.meter.useGpsPrice) then
+                local distanceBetweenPickupAndDropoff = CalculateTravelDistanceBetweenPoints(pickupLocation.x,
+                        pickupLocation.y, pickupLocation.z, dropOffLocation.x, dropOffLocation.y, dropOffLocation.z) /
+                    1609 -- Convert to miles
+                fareAmount = (distanceBetweenPickupAndDropoff * config.meter.defaultPrice) + config.meter.startingPrice
+            else
                 fareAmount = ((meterData['distanceTraveled']) * config.meter.defaultPrice) + config.meter.startingPrice
             end
 
@@ -291,7 +305,7 @@ end
 local function onEnterDropZone()
     if whitelistedVehicle() and not isInsideDropZone and NpcData.NpcTaken then
         isInsideDropZone = true
-        lib.showTextUI(locale('info.drop_off_npc'), {position = 'left-center'})
+        lib.showTextUI(locale('info.drop_off_npc'), { position = 'left-center' })
         dropNpcPoly()
     end
 end
@@ -299,13 +313,14 @@ end
 local function onExitDropZone()
     lib.hideTextUI()
     isInsideDropZone = false
-
 end
 
 function createNpcDelieveryLocation()
     delieveryZone = lib.zones.box({
         coords = config.pzLocations.dropLocations[NpcData.CurrentDeliver].coord,
-        size = vec3(config.pzLocations.dropLocations[NpcData.CurrentDeliver].height, config.pzLocations.dropLocations[NpcData.CurrentDeliver].width, (config.pzLocations.dropLocations[NpcData.CurrentDeliver].maxZ - config.pzLocations.dropLocations[NpcData.CurrentDeliver].minZ)),
+        size = vec3(config.pzLocations.dropLocations[NpcData.CurrentDeliver].height,
+            config.pzLocations.dropLocations[NpcData.CurrentDeliver].width,
+            (config.pzLocations.dropLocations[NpcData.CurrentDeliver].maxZ - config.pzLocations.dropLocations[NpcData.CurrentDeliver].minZ)),
         rotation = config.pzLocations.dropLocations[NpcData.CurrentDeliver].heading,
         debug = config.debugPoly,
         onEnter = onEnterDropZone,
@@ -358,7 +373,8 @@ end
 
 local function setLocationsBlip()
     if not config.useBlips then return end
-    local taxiBlip = AddBlipForCoord(config.locations.main.coords.x, config.locations.main.coords.y, config.locations.main.coords.z)
+    local taxiBlip = AddBlipForCoord(config.locations.main.coords.x, config.locations.main.coords.y,
+        config.locations.main.coords.z)
     SetBlipSprite(taxiBlip, 198)
     SetBlipDisplay(taxiBlip, 4)
     SetBlipScale(taxiBlip, 0.6)
@@ -377,11 +393,10 @@ local function taxiGarage()
     }
     local options = {}
     for _, v in pairs(config.allowedVehicles) do
-
         options[#options + 1] = {
             title = v.label,
             event = 'qb-taxi:client:TakeVehicle',
-            args = {model = v.model},
+            args = { model = v.model },
             icon = 'fa-solid fa-taxi'
         }
     end
@@ -447,7 +462,7 @@ local function destroyGarageZone()
 end
 
 function setupTaxiParkingZone()
-        taxiParkingZone = lib.zones.box({
+    taxiParkingZone = lib.zones.box({
         coords = vec3(config.locations.main.coords.x, config.locations.main.coords.y, config.locations.main.coords.z),
         size = vec3(4.0, 4.0, 4.0),
         rotation = 55,
@@ -515,7 +530,10 @@ RegisterNetEvent('qb-taxi:client:DoTaxiNpc', function()
             local PedSkin = math.random(1, #config.npcSkins[Gender])
             local model = GetHashKey(config.npcSkins[Gender][PedSkin])
             lib.requestModel(model)
-            NpcData.Npc = CreatePed(3, model, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z - 0.98, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].w, true, true)
+            NpcData.Npc = CreatePed(3, model, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x,
+                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y,
+                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z - 0.98,
+                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].w, true, true)
             SetModelAsNoLongerNeeded(model)
             PlaceObjectOnGroundProperly(NpcData.Npc)
             FreezeEntityPosition(NpcData.Npc, true)
@@ -529,7 +547,9 @@ RegisterNetEvent('qb-taxi:client:DoTaxiNpc', function()
                 createNpcPickUpLocation()
             end
 
-            NpcData.NpcBlip = AddBlipForCoord(sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z)
+            NpcData.NpcBlip = AddBlipForCoord(sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x,
+                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y,
+                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z)
             SetBlipColour(NpcData.NpcBlip, 3)
             SetBlipRoute(NpcData.NpcBlip, true)
             SetBlipRouteColour(NpcData.NpcBlip, 3)
@@ -540,19 +560,25 @@ RegisterNetEvent('qb-taxi:client:DoTaxiNpc', function()
             if not config.useTarget then
                 CreateThread(function()
                     while not NpcData.NpcTaken do
-
                         local pos = GetEntityCoords(cache.ped)
                         local dist = #(pos - vec3(sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z))
 
                         if dist < 20 then
-                            DrawMarker(2, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.3, 255, 255, 255, 255, false, false, 0, true, nil, nil, false)
+                            DrawMarker(2, sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].x,
+                                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].y,
+                                sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].z, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.3, 0.3, 0.3, 255, 255, 255, 255, false, false, 0, true, nil, nil, false)
 
                             if dist < 5 then
-                                qbx.drawText3d({text = locale('info.call_npc'), coords = sharedConfig.npcLocations.takeLocations[NpcData.CurrentNpc].xyz})
+                                qbx.drawText3d({
+                                    text = locale('info.call_npc'),
+                                    coords = sharedConfig.npcLocations
+                                        .takeLocations[NpcData.CurrentNpc].xyz
+                                })
                                 if IsControlJustPressed(0, 38) then
                                     local maxSeats, freeSeat = GetVehicleMaxNumberOfPassengers(cache.vehicle), 0
 
-                                    for i=maxSeats - 1, 0, -1 do
+                                    for i = maxSeats - 1, 0, -1 do
                                         if IsVehicleSeatFree(cache.vehicle, i) then
                                             freeSeat = i
                                             break
@@ -692,6 +718,46 @@ local function init()
         setupGarageZone()
         setupTaxiParkingZone()
         setLocationsBlip()
+
+        for i = 1, #config.allowedVehicles, 1 do
+            local model = config.allowedVehicles[i].model
+
+            exports.sleepless_interact:removeModel(model, {
+                'taxi:toggleMeter',
+                'taxi:useMeter',
+                'taxi:npcMission'
+            })
+
+            exports.sleepless_interact:addModel(model, {
+                {
+                    label = 'Show/Hide Meter',
+                    name = 'taxi:toggleMeter',
+                    event = 'qb-taxi:client:toggleMeter',
+                    canInteract = function()
+                        if not isDriver() then return false end
+                        return true
+                    end,
+                },
+                {
+                    label = 'Start/Stop Meter',
+                    name = 'taxi:useMeter',
+                    event = 'qb-taxi:client:enableMeter',
+                    canInteract = function()
+                        if not isDriver() then return false end
+                        return true
+                    end,
+                },
+                {
+                    label = 'NPC Mission',
+                    name = 'taxi:npcMission',
+                    event = 'qb-taxi:client:DoTaxiNpc',
+                    canInteract = function()
+                        if not isDriver() then return false end
+                        return true
+                    end,
+                },
+            })
+        end
     end
 end
 

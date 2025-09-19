@@ -1,21 +1,24 @@
 return {
-    useTarget = false,
+    useTarget = true,
     debugPoly = false,
     useBlips = true,
     allowedVehicles = {
-        { model = 'taxi', label = locale('info.taxi_label_1') }
+        { model = 'gbtaxiargento7f', label = 'Argento 7F Taxi' },
+        { model = 'gbtaxieon', label = 'Eon Taxi' },
+        { model = 'gbtaxistanierle', label = 'Stainer LE Taxi' },
+        { model = 'gbtaxistarlight', label = 'Starlight Taxi' },
     },
     meter = {
-        defaultPrice = 125.0, -- price per mile
-        startingPrice = 0,     -- static starting price
+        defaultPrice = 7.5, -- price per mile
+        startingPrice = 5.0, -- static starting price
         useGpsPrice = true -- use GPS distance instead of driven distance
     },
     locations = {
         main = {
-            coords = vec4(909.5, -177.35, 74.22, 238.5),
+            coords = vec4(0.0, 0.0, 0.0, 0.0),
         },
         garage = {
-            coords = vec3(895.3, -179.35, 75.0),
+            coords = vec3(0.0, 0.0, 0.0),
         }
     },
     pzLocations = {
@@ -37,7 +40,6 @@ return {
             { coord = vec3(-1285.33, 293.67, 64.83),   height = 17.6, width = 4.2, heading = 241, minZ = 63.88,  maxZ = 65.68 },
             { coord = vec3(-806.68, 825.2, 202.81),    height = 21.2, width = 4.2, heading = 276, minZ = 200.46, maxZ = 204.66 },
         },
-
         dropLocations = {
             { coord = vec3(-1073.21, -265.35, 37.35), height = 21.2, width = 4.2, heading = 296, minZ = 35.0,   maxZ = 39.2 },
             { coord = vec3(-1411.45, -590.98, 29.99), height = 21.2, width = 4.2, heading = 299, minZ = 27.64,  maxZ = 31.84 },
@@ -65,17 +67,17 @@ return {
         }
     },
     cabSpawns = {
-        vec4(899.0837, -180.4414, 73.4115, 238.7553),
-        vec4(897.1274, -183.3882, 73.3531, 238.4949),
-        vec4(903.4929, -191.7166, 73.3883, 60.5255),
-        vec4(904.9221, -188.7516, 73.4204, 60.5921),
-        vec4(906.9083, -186.0502, 73.6249, 58.2671),
-        vec4(908.7374, -183.2168, 73.7542, 57.1579),
-        vec4(911.3865, -163.0307, 73.9763, 194.4093),
-        vec4(913.5932, -159.4309, 74.3888, 193.9838),
-        vec4(916.0979, -170.6549, 74.0125, 100.604),
-        vec4(918.3217, -167.1944, 74.2036, 101.5165),
-        vec4(920.6716, -163.4763, 74.4108, 96.2972),
+        -- vec4(899.0837, -180.4414, 73.4115, 238.7553),
+        -- vec4(897.1274, -183.3882, 73.3531, 238.4949),
+        -- vec4(903.4929, -191.7166, 73.3883, 60.5255),
+        -- vec4(904.9221, -188.7516, 73.4204, 60.5921),
+        -- vec4(906.9083, -186.0502, 73.6249, 58.2671),
+        -- vec4(908.7374, -183.2168, 73.7542, 57.1579),
+        -- vec4(911.3865, -163.0307, 73.9763, 194.4093),
+        -- vec4(913.5932, -159.4309, 74.3888, 193.9838),
+        -- vec4(916.0979, -170.6549, 74.0125, 100.604),
+        -- vec4(918.3217, -167.1944, 74.2036, 101.5165),
+        -- vec4(920.6716, -163.4763, 74.4108, 96.2972),
     },
     npcSkins = {
         {

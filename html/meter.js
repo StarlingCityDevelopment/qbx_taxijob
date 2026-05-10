@@ -3,7 +3,7 @@ let meterStarted = false;
 const updateMeter = (meterData) => {
   $("#total-price").html("$ " + meterData.currentFare.toFixed(2));
   $("#total-distance").html(
-    (meterData.distanceTraveled).toFixed(2) + " mi"
+    (meterData.distanceTraveled).toFixed(2) + " km"
   );
 };
 

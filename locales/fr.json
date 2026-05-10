@@ -9,8 +9,8 @@
     },
     "success": {},
     "info": {
-        "person_was_dropped_off": "La personne a été déposée!",
-        "npc_on_gps": "Le client est indiqué sur votre GPS!",
+        "person_was_dropped_off": "La personne a été déposée !",
+        "npc_on_gps": "Le client est indiqué sur votre GPS !",
         "go_to_location": "Amenez le client à la destination spécifiée",
         "vehicle_parking": "[E] Parking",
         "job_vehicles": "[E] Vehicules disponibles",

@@ -4,18 +4,18 @@ return {
     useBlips = true,
     allowedVehicles = {
         { model = 'gbtaxiargento7f', label = 'Argento 7F Taxi' },
-        { model = 'gbtaxieon', label = 'Eon Taxi' },
+        { model = 'gbtaxieon',       label = 'Eon Taxi' },
         { model = 'gbtaxistanierle', label = 'Stainer LE Taxi' },
         { model = 'gbtaxistarlight', label = 'Starlight Taxi' },
     },
     meter = {
-        defaultPrice = 7.5, -- price per mile
+        defaultPrice = 25,   -- price per kilometer
         startingPrice = 5.0, -- static starting price
-        useGpsPrice = true -- use GPS distance instead of driven distance
+        useGpsPrice = false  -- use GPS distance instead of driven distance
     },
     locations = {
         main = {
-            coords = vec4(0.0, 0.0, 0.0, 0.0),
+            coords = vec4(-1243.13, -283.83, 37.73, 210.48),
         },
         garage = {
             coords = vec3(0.0, 0.0, 0.0),
@@ -28,7 +28,7 @@ return {
             { coord = vec3(238.93, -858.91, 29.67),    height = 17.6, width = 4.2, heading = 71,  minZ = 28.72,  maxZ = 30.52 },
             { coord = vec3(823.4, -1882.96, 29.29),    height = 17.6, width = 4.2, heading = 167, minZ = 28.34,  maxZ = 30.14 },
             { coord = vec3(354.05, -1971.57, 24.43),   height = 17.6, width = 4.2, heading = 236, minZ = 23.48,  maxZ = 25.28 },
-            { coord = vec3(-225.61, -2043.63, 27.62),  height = 17.6, width = 4.2, heading = 143, minZ = 26.67,  maxZ = 28.47 },
+            { coord = vec3(-224.62, -2045.96, 17.98),  height = 17.6, width = 4.2, heading = 143, minZ = 26.67,  maxZ = 28.47 },
             { coord = vec3(-1048.72, -2714.2, 13.76),  height = 17.6, width = 4.2, heading = 240, minZ = 12.81,  maxZ = 14.61 },
             { coord = vec3(-776.15, -1280.37, 5.0),    height = 17.6, width = 4.2, heading = 261, minZ = 4.05,   maxZ = 5.85 },
             { coord = vec3(-1180.3, -1304.22, 5.15),   height = 17.6, width = 4.2, heading = 205, minZ = 4.2,    maxZ = 6.0 },
@@ -48,10 +48,10 @@ return {
             { coord = vec3(442.12, -1685.31, 28.85),  height = 21.2, width = 4.2, heading = 321, minZ = 26.5,   maxZ = 30.7 },
             { coord = vec3(1120.51, -958.97, 46.83),  height = 21.2, width = 4.2, heading = 286, minZ = 44.48,  maxZ = 48.68 },
             { coord = vec3(1240.79, -377.77, 68.61),  height = 21.2, width = 4.2, heading = 249, minZ = 66.26,  maxZ = 70.46 },
-            { coord = vec3(923.66, -2226.07, 29.98),  height = 21.2, width = 4.2, heading = 354, minZ = 27.63,  maxZ = 31.83 },
-            { coord = vec3(1920.15, 3701.6, 32.26),   height = 21.2, width = 4.2, heading = 299, minZ = 29.91,  maxZ = 34.11 },
-            { coord = vec3(1661.91, 4875.87, 41.66),  height = 21.2, width = 4.2, heading = 8,   minZ = 39.31,  maxZ = 43.51 },
-            { coord = vec3(-9.46, 6529.92, 30.95),    height = 21.2, width = 4.2, heading = 314, minZ = 28.6,   maxZ = 32.8 },
+            -- { coord = vec3(923.66, -2226.07, 29.98),  height = 21.2, width = 4.2, heading = 354, minZ = 27.63,  maxZ = 31.83 },
+            -- { coord = vec3(1920.15, 3701.6, 32.26),   height = 21.2, width = 4.2, heading = 299, minZ = 29.91,  maxZ = 34.11 },
+            -- { coord = vec3(1661.91, 4875.87, 41.66),  height = 21.2, width = 4.2, heading = 8,   minZ = 39.31,  maxZ = 43.51 },
+            -- { coord = vec3(-9.46, 6529.92, 30.95),    height = 21.2, width = 4.2, heading = 314, minZ = 28.6,   maxZ = 32.8 },
             { coord = vec3(-3233.12, 1010.33, 11.72), height = 21.2, width = 4.2, heading = 357, minZ = 9.37,   maxZ = 13.57 },
             { coord = vec3(-1604.11, -401.71, 41.95), height = 21.2, width = 4.2, heading = 322, minZ = 39.6,   maxZ = 43.8 },
             { coord = vec3(-586.48, -255.96, 36.53),  height = 21.2, width = 4.2, heading = 31,  minZ = 34.68,  maxZ = 37.48 },

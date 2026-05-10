@@ -1,4 +1,9 @@
 return {
+    meter = {
+        defaultPrice = 25,   -- price per kilometer
+        startingPrice = 5.0, -- static starting price
+        useGpsPrice = false  -- use GPS distance instead of driven distance
+    },
     npcLocations = {
         takeLocations = {
             vec4(257.61, -380.57, 44.71, 340.5),

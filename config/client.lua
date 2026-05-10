@@ -8,11 +8,6 @@ return {
         { model = 'gbtaxistanierle', label = 'Stainer LE Taxi' },
         { model = 'gbtaxistarlight', label = 'Starlight Taxi' },
     },
-    meter = {
-        defaultPrice = 25,   -- price per kilometer
-        startingPrice = 5.0, -- static starting price
-        useGpsPrice = false  -- use GPS distance instead of driven distance
-    },
     locations = {
         main = {
             coords = vec4(-1243.13, -283.83, 37.73, 210.48),

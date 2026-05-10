@@ -6,7 +6,6 @@ local meterIsOpen = false
 local meterActive = false
 local lastLocation = nil
 local mouseActive = false
-local garageZone, taxiParkingZone = nil, nil
 local pickupLocation, dropOffLocation = nil, nil
 
 -- used for polyzones
@@ -129,14 +128,16 @@ local function getDeliveryLocation()
                             SendNUIMessage({
                                 action = 'toggleMeter'
                             })
-                            TriggerServerEvent('qb-taxi:server:NpcPay', meterData.currentFare)
+                            if NpcData.NpcTaken then
+                                TriggerServerEvent('qb-taxi:server:NpcPay')
+                            end
                             meterActive = false
-                            config.meter.useGpsPrice = false
+                            sharedConfig.meter.useGpsPrice = false
                             SendNUIMessage({
                                 action = 'resetMeter'
                             })
 
-                            pickupLocation, DropOffLocation = nil, nil
+                            pickupLocation, dropOffLocation = nil, nil
 
                             exports.qbx_core:Notify(locale('info.person_was_dropped_off'), 'success')
                             if NpcData.DeliveryBlip then
@@ -186,21 +187,27 @@ local function callNpcPoly()
                     getDeliveryLocation()
                     pickupLocation = GetEntityCoords(cache.ped)
                     dropOffLocation = config.pzLocations.dropLocations[NpcData.CurrentDeliver].coord.xyz
+                    local distance = CalculateTravelDistanceBetweenPoints(pickupLocation.x, pickupLocation.y,
+                        pickupLocation.z, dropOffLocation.x, dropOffLocation.y, dropOffLocation.z)
+                    if distance <= 0 then
+                        distance = #(pickupLocation - dropOffLocation)
+                    end
+                    TriggerServerEvent('qb-taxi:server:startNpcMission', distance)
 
-                    config.meter.useGpsPrice = true
+                    sharedConfig.meter.useGpsPrice = true
                     meterIsOpen = true
                     meterActive = true
 
                     SendNUIMessage({
                         action = 'openMeter',
                         toggle = true,
-                        meterData = config.meter
+                        meterData = sharedConfig.meter
                     })
                     SendNUIMessage({
                         action = 'toggleMeter'
                     })
                     NpcData.NpcTaken = true
-                    createNpcDelieveryLocation()
+                    createNpcDeliveryLocation()
                     zone:remove()
                     lib.hideTextUI()
                 end
@@ -288,13 +295,15 @@ local function calculateFareAmount()
 
             local fareAmount = 0
 
-            if config.meter.useGpsPrice and pickupLocation and dropOffLocation then
+            if sharedConfig.meter.useGpsPrice and pickupLocation and dropOffLocation then
                 local distanceBetweenPickupAndDropoff = CalculateTravelDistanceBetweenPoints(pickupLocation.x,
                         pickupLocation.y, pickupLocation.z, dropOffLocation.x, dropOffLocation.y, dropOffLocation.z) /
                     1000 -- Convert to kilometers
-                fareAmount = (distanceBetweenPickupAndDropoff * config.meter.defaultPrice) + config.meter.startingPrice
+                fareAmount = (distanceBetweenPickupAndDropoff * sharedConfig.meter.defaultPrice) +
+                    sharedConfig.meter.startingPrice
             else
-                fareAmount = ((meterData['distanceTraveled']) * config.meter.defaultPrice) + config.meter.startingPrice
+                fareAmount = ((meterData['distanceTraveled']) * sharedConfig.meter.defaultPrice) +
+                    sharedConfig.meter.startingPrice
             end
 
             meterData['currentFare'] = math.floor(fareAmount)
@@ -321,7 +330,7 @@ local function onExitDropZone()
     isInsideDropZone = false
 end
 
-function createNpcDelieveryLocation()
+function createNpcDeliveryLocation()
     delieveryZone = lib.zones.box({
         coords = config.pzLocations.dropLocations[NpcData.CurrentDeliver].coord,
         size = vec3(config.pzLocations.dropLocations[NpcData.CurrentDeliver].height,
@@ -351,9 +360,11 @@ function dropNpcPoly()
                     SendNUIMessage({
                         action = 'toggleMeter'
                     })
-                    TriggerServerEvent('qb-taxi:server:NpcPay', meterData.currentFare)
+                    if NpcData.NpcTaken then
+                        TriggerServerEvent('qb-taxi:server:NpcPay')
+                    end
                     meterActive = false
-                    config.meter.useGpsPrice = false
+                    sharedConfig.meter.useGpsPrice = false
                     SendNUIMessage({
                         action = 'resetMeter'
                     })
@@ -411,96 +422,6 @@ local function taxiGarage()
     registeredMenu['options'] = options
     lib.registerContext(registeredMenu)
     lib.showContext('garages_depotlist')
-end
-
-local function setupGarageZone()
-    if config.useTarget then
-        lib.requestModel(`a_m_m_indian_01`)
-        taxiPed = CreatePed(3, `a_m_m_indian_01`, 894.93, -179.12, 74.7 - 1.0, 237.09, false, true)
-        SetModelAsNoLongerNeeded(`a_m_m_indian_01`)
-        SetBlockingOfNonTemporaryEvents(taxiPed, true)
-        FreezeEntityPosition(taxiPed, true)
-        SetEntityInvincible(taxiPed, true)
-        exports.ox_target:addLocalEntity(taxiPed, {
-            {
-                type = 'client',
-                event = 'qb-taxijob:client:requestcab',
-                icon = 'fa-solid fa-taxi',
-                label = locale('info.request_taxi_target'),
-                job = 'taxi',
-            }
-        })
-    else
-        local function onEnter()
-            if not cache.vehicle then
-                lib.showTextUI(locale('info.request_taxi'))
-            end
-        end
-
-        local function onExit()
-            lib.hideTextUI()
-        end
-
-        local function inside()
-            if IsControlJustPressed(0, 38) then
-                lib.hideTextUI()
-                taxiGarage()
-                return
-            end
-        end
-
-        garageZone = lib.zones.box({
-            coords = config.locations.garage.coords,
-            size = vec3(1.6, 4.0, 2.8),
-            rotation = 328.5,
-            debug = config.debugPoly,
-            inside = inside,
-            onEnter = onEnter,
-            onExit = onExit
-        })
-    end
-end
-
-local function destroyGarageZone()
-    if not garageZone then return end
-
-    garageZone:remove()
-    garageZone = nil
-end
-
-function setupTaxiParkingZone()
-    taxiParkingZone = lib.zones.box({
-        coords = vec3(config.locations.main.coords.x, config.locations.main.coords.y, config.locations.main.coords.z),
-        size = vec3(4.0, 4.0, 4.0),
-        rotation = 55,
-        debug = config.debugPoly,
-        inside = function()
-            if QBX.PlayerData.job.name ~= 'taxi' then return end
-            if IsControlJustPressed(0, 38) then
-                if whitelistedVehicle() then
-                    if meterIsOpen then
-                        TriggerEvent('qb-taxi:client:toggleMeter')
-                        meterActive = false
-                    end
-                    DeleteVehicle(cache.vehicle)
-                    exports.qbx_core:Notify(locale('info.taxi_returned'), 'success')
-                end
-            end
-        end,
-        onEnter = function()
-            lib.showTextUI(locale('info.vehicle_parking'))
-        end,
-        onExit = function()
-            lib.hideTextUI()
-        end
-    })
-end
-
-local function destroyTaxiParkingZone()
-    if not taxiParkingZone then return end
-
-    taxiParkingZone:remove()
-    taxiParkingZone = nil
 end
 
 RegisterNetEvent('qb-taxi:client:TakeVehicle', function(data)
@@ -603,7 +524,15 @@ RegisterNetEvent('qb-taxi:client:DoTaxiNpc', function()
                                     getDeliveryLocation()
                                     pickupLocation = GetEntityCoords(cache.ped)
                                     dropOffLocation = config.pzLocations.dropLocations[NpcData.CurrentDeliver].coord.xyz
-                                    config.meter.useGpsPrice = true
+                                    local distance = CalculateTravelDistanceBetweenPoints(pickupLocation.x,
+                                        pickupLocation.y, pickupLocation.z, dropOffLocation.x, dropOffLocation.y,
+                                        dropOffLocation.z)
+                                    if distance <= 0 then
+                                        distance = #(pickupLocation - dropOffLocation)
+                                    end
+                                    TriggerServerEvent('qb-taxi:server:startNpcMission', distance)
+
+                                    sharedConfig.meter.useGpsPrice = true
                                     meterIsOpen = true
                                     meterActive = true
                                     NpcData.NpcTaken = true
@@ -611,7 +540,7 @@ RegisterNetEvent('qb-taxi:client:DoTaxiNpc', function()
                                     SendNUIMessage({
                                         action = 'openMeter',
                                         toggle = true,
-                                        meterData = config.meter
+                                        meterData = sharedConfig.meter
                                     })
                                     SendNUIMessage({
                                         action = 'toggleMeter'
@@ -639,7 +568,7 @@ RegisterNetEvent('qb-taxi:client:toggleMeter', function()
                 SendNUIMessage({
                     action = 'openMeter',
                     toggle = true,
-                    meterData = config.meter
+                    meterData = sharedConfig.meter
                 })
                 meterIsOpen = true
             else
@@ -699,10 +628,18 @@ RegisterNUICallback('hideMouse', function(_, cb)
 end)
 
 -- Threads
+local isWhitelisted = false
+CreateThread(function()
+    while true do
+        Wait(1000)
+        isWhitelisted = whitelistedVehicle()
+    end
+end)
+
 CreateThread(function()
     while true do
         Wait(200)
-        if whitelistedVehicle() then
+        if isWhitelisted then
             calculateFareAmount()
         end
     end
@@ -710,7 +647,7 @@ end)
 
 CreateThread(function()
     while true do
-        if not whitelistedVehicle() then
+        if not isWhitelisted then
             if meterIsOpen then
                 SendNUIMessage({
                     action = 'openMeter',
@@ -730,18 +667,17 @@ local function init()
         for i = 1, #config.allowedVehicles, 1 do
             local model = config.allowedVehicles[i].model
 
-            exports.sleepless_interact:removeModel(model, {
+            exports.ox_target:removeModel(model, {
                 'taxi:toggleMeter',
                 'taxi:useMeter',
                 'taxi:npcMission'
             })
 
-            exports.sleepless_interact:addModel(model, {
+            exports.ox_target:addModel(model, {
                 {
                     label = 'Affichage Taximetre',
                     name = 'taxi:toggleMeter',
                     event = 'qb-taxi:client:toggleMeter',
-                    allowInVehicle = true,
                     distance = 3,
                     canInteract = function()
                         return isDriver()
@@ -751,7 +687,6 @@ local function init()
                     label = 'Start/Stop Taximetre',
                     name = 'taxi:useMeter',
                     event = 'qb-taxi:client:enableMeter',
-                    allowInVehicle = true,
                     distance = 3,
                     canInteract = function()
                         return isDriver()
@@ -761,7 +696,6 @@ local function init()
                     label = 'Mission PNJ',
                     name = 'taxi:npcMission',
                     event = 'qb-taxi:client:DoTaxiNpc',
-                    allowInVehicle = true,
                     distance = 3,
                     canInteract = function()
                         return isDriver()
